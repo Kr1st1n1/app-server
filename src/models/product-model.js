@@ -1,6 +1,7 @@
-const { Schema, model } = require('mongoose');
+const { Schema, Types, model } = require('mongoose');
+const yup = require('yup');
 
-const productSheme = Schema({
+const productShema = Schema({
   title: {
     type: String,
     required: true,
@@ -10,7 +11,8 @@ const productSheme = Schema({
     required: true,
   },
   categoryId: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: 'Category',
     required: true,
   },
   img: {
@@ -25,6 +27,45 @@ const productSheme = Schema({
   timestamps: true
 });
 
-const ProductModel = model('Product', productSheme);
+const productValidationSchema = yup.object().shape({
+  title: yup
+    .string().typeError('Product.title must be a string')
+    .required('Product.title is required'),
+  description: yup
+    .string().typeError('Product.description must be a string')
+    .required('Product.description is required'),
+  categoryId: yup
+  .string().typeError('Cup.categoryId must be a string')
+  .test(
+    'is-mongo-object-id',
+    'Cup.categoryId must be valid MongoDB object Id',
+    Types.ObjectId.isValid
+  )
+  .required('Cup.categoryId is required'),
+  img: yup
+    .string().typeError('Product.img must be a string')
+    .required('Product.img is required'),
+  price: yup
+    .number().typeError('Product.price must be a number')
+    .required('Product.price is required')
+    .positive('Product.price must be positive')
+});
+
+const productUpdateValidationSchema = yup.object().shape({
+  title: yup.string().typeError('Product.title must be a string'),
+  description: yup.string().typeError('Product.description must be a string'),
+  categoryId: yup.string().typeError('Product.categoryId must be a string'),
+  img: yup.string().typeError('Product.img must be a string'),
+  price: yup.number()
+    .typeError('Product.price must be a number')
+    .positive('Product.price must be positive'),
+});
+
+productShema.statics.validate = (productData) => productValidationSchema.validateSync(productData)
+productShema.statics.validateUpdate = (productData) => productUpdateValidationSchema.validateSync(productData)
+
+const ProductModel = model('Product', productShema);
 
 module.exports = ProductModel;
+
+
