@@ -1,3 +1,6 @@
+const { Schema, Types, model } = require('mongoose');
+const yup = require('yup');
+
 const userSchema = Schema({
   email: {
     type: String,
