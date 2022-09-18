@@ -39,7 +39,6 @@ const userSchema = Schema({
   },
   img: {
     type: String,
-    required: true,
   },
 }, {
   timestamps: true
@@ -101,7 +100,6 @@ const userValidationSchema = yup.object({
 
   img: yup
     .string().typeError('User.img must be a string')
-    .required('User.img is required'),
 });
 
 const userUpdateValidationSchema = yup.object({
@@ -159,8 +157,8 @@ const userUpdateValidationSchema = yup.object({
   img: yup.string().typeError('User.img must be a string')
 });
 
-userSchema.statics.validate = (userData) => userValidationSchema.validate(userData);
-userSchema.statics.validateUpdate = (userData) => userUpdateValidationSchema.validate(userData);
+userSchema.statics.validateData = (userData) => userValidationSchema.validate(userData);
+userSchema.statics.validateUpdateData = (userData) => userUpdateValidationSchema.validate(userData);
 
 const UserModel = model('User', userSchema);
 

@@ -61,8 +61,8 @@ const productUpdateValidationSchema = yup.object().shape({
     .positive('Product.price must be positive'),
 });
 
-productShema.statics.validate = (productData) => productValidationSchema.validateSync(productData)
-productShema.statics.validateUpdate = (productData) => productUpdateValidationSchema.validateSync(productData)
+productShema.statics.validateData = (productData) => productValidationSchema.validate(productData)
+productShema.statics.validateUpdateData = (productData) => productUpdateValidationSchema.validate(productData)
 
 const ProductModel = model('Product', productShema);
 

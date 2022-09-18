@@ -40,7 +40,7 @@ const create = async (req, res) => {
   const newProductData = req.body;
 
   try {
-    ProductModel.validate(newProductData);
+    await ProductModel.validateData(newProductData);
 
     const newProduct = await ProductModel.create(newProductData);
 
@@ -57,7 +57,7 @@ const replace = async (req, res) => {
   const newProductData = { title, description, categoryId, img, price };
 
   try {
-    ProductModel.validate(newProductData);
+    await ProductModel.validateData(newProductData);
 
     const updatedProduct = await ProductModel.findByIdAndUpdate(
       productId,
@@ -80,7 +80,7 @@ const update = async (req, res) => {
   const newProductData = removeEmptyProps({ title, description, categoryId, img, price });
 
   try {
-    ProductModel.validateUpdate(newProductData);
+    await ProductModel.validateUpdateData(newProductData);
 
     const updatedProduct = await ProductModel.findByIdAndUpdate(
       productId,

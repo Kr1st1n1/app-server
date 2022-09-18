@@ -20,8 +20,7 @@ const fetch = async (req, res) => {
   const categoryId = req.params.id;
 
   try {
-    const foundCategory = await CategoryModel
-  .findById(categoryId);
+   const foundCategory = await CategoryModel.findById(categoryId);
     if (foundCategory === null) throw createCategoryNotFoundError(categoryId)
 
     res.status(200).json(foundCategory);
@@ -33,7 +32,8 @@ const fetch = async (req, res) => {
 const create = async (req, res) => {
   const newCategoryData = req.body;
 
-  try {CategoryModel.validate(newCategoryData);
+  try {
+  await CategoryModel.validateData(newCategoryData);
   const newCategory = await CategoryModel.create(newCategoryData);
 
     res.status(201).json(newCategory);
@@ -49,8 +49,7 @@ const replace = async (req, res) => {
   const newCategoryData = { title, image };
 
   try {
-   CategoryModel
-  .validate(newCategoryData);
+   await CategoryModel.validateData(newCategoryData);
 
     const updatedCategory = await CategoryModel.findByIdAndUpdate(
       categoryId,
@@ -73,8 +72,7 @@ const update = async (req, res) => {
   const newCategoryData = removeEmptyProps({ title, image });
 
   try {
-   CategoryModel
-  .validateUpdate(newCategoryData);
+   await CategoryModel.validateUpdateData(newCategoryData);
 
     const updatedCategory = await CategoryModel.findByIdAndUpdate(
       categoryId,
