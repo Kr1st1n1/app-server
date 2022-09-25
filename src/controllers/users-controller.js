@@ -1,5 +1,4 @@
 const { createNotFoundError, sendErrorResponse } = require('../helpers/errors');
-const { removeEmptyProps } = require('../helpers');
 const { hashPassword } = require('../helpers/password-encryption');
 const UserModel = require('../models/user-model');
 
@@ -34,7 +33,6 @@ const create = async (req, res) => {
       password,
       role,
       cartItems,
-      favoredProducts,
       img,
     } = requestData;
 
@@ -44,7 +42,6 @@ const create = async (req, res) => {
       password: await hashPassword(password),
       role,
       cartItems,
-      favoredProducts,
       img
     });
 
@@ -64,7 +61,6 @@ const replace = async (req, res) => {
       password,
       role,
       cartItems,
-      favoredProducts,
       img,
     } = requestData;
 
@@ -78,7 +74,6 @@ const replace = async (req, res) => {
         password: await hashPassword(password),
         role,
         cartItems,
-        favoredProducts,
         img,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -106,7 +101,6 @@ const update = async (req, res) => {
       password,
       role,
       cartItems,
-      favoredProducts,
       img,
     } = requestData;
 
@@ -117,7 +111,6 @@ const update = async (req, res) => {
         password: password && await hashPassword(password),
         role,
         cartItems,
-        favoredProducts,
         img
       },
       { new: true }

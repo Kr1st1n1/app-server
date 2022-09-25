@@ -35,13 +35,13 @@ const productValidationSchema = yup.object().shape({
     .string().typeError('Product.description must be a string')
     .required('Product.description is required'),
   categoryId: yup
-  .string().typeError('Cup.categoryId must be a string')
+  .string().typeError('Product.categoryId must be a string')
   .test(
     'is-mongo-object-id',
-    'Cup.categoryId must be valid MongoDB object Id',
+    'Product.categoryId must be valid MongoDB object Id',
     Types.ObjectId.isValid
   )
-  .required('Cup.categoryId is required'),
+  .required('Product.categoryId is required'),
   img: yup
     .string().typeError('Product.img must be a string')
     .required('Product.img is required'),
@@ -67,5 +67,3 @@ productShema.statics.validateUpdateData = (productData) => productUpdateValidati
 const ProductModel = model('Product', productShema);
 
 module.exports = ProductModel;
-
-

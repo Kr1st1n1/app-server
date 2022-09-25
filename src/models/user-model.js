@@ -30,14 +30,6 @@ const userSchema = Schema({
     }],
     default: []
   },
-  favoredProducts: {
-    type: [{
-      type: Schema.Types.ObjectId,
-      ref: 'Product',
-      required: true,
-    }],
-    default: []
-  },
   img: {
     type: String,
   },
@@ -102,15 +94,6 @@ const userValidationSchema = yup.object({
 
   cartItems: yup.array(cartItemValidationSchema),
 
-    favoredProducts: yup
-    .array(yup.string().typeError('User.favoredProducts element must be a string')
-      .required('User.favoredProducts element is required')
-      .test(
-        'is-mongo-object-id',
-        'User.favoredProducts element must be valid MongoDB object Id',
-        Types.ObjectId.isValid
-      )),
-
   img: yup
     .string().typeError('User.img must be a string')
 });
@@ -145,15 +128,6 @@ const userUpdateValidationSchema = yup.object({
     .oneOf(['USER', 'ADMIN']),
 
   cartItems: yup.array(cartItemValidationSchema),
-
-    favoredProducts: yup
-    .array(yup.string().typeError('User.favoredProducts element must be a string')
-      .required('User.favoredProducts element is required')
-      .test(
-        'is-mongo-object-id',
-        'User.favoredProducts element must be valid MongoDB object Id',
-        Types.ObjectId.isValid
-      )),
 
   img: yup.string().typeError('User.img must be a string')
 });
