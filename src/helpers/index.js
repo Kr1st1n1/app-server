@@ -12,4 +12,4 @@ const removeEmptyProps = (obj) => Object.entries(obj).reduce((prevResult, [key, 
 module.exports = {
   createId,
   removeEmptyProps,
-};
+}

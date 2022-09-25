@@ -1,3 +1,4 @@
+const { JsonWebTokenError, TokenExpiredError } = require('jsonwebtoken');
 const RequestError = require('./request-error');
 
 const createBadDataError = (message) => new RequestError({ message, statusCode: 400 });

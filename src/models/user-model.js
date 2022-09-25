@@ -1,5 +1,6 @@
 const { Schema, Types, model } = require('mongoose');
 const yup = require('yup');
+const productModel = require('./product-model');
 
 const userSchema = Schema({
   email: {
@@ -44,6 +45,30 @@ const userSchema = Schema({
   timestamps: true
 });
 
+const cartItemValidationSchema = yup.object({
+  productId: yup.string().typeError('User.cartItems element.productId must be a string')
+    .required('User.cartItems element.productId is required')
+    .test(
+      'is-mongo-object-id',
+      'User.cartItems element.productId must be valid MongoDB object Id',
+      Types.ObjectId.isValid
+    )
+    .test(
+      'product-exists',
+      'product was not found using cartItems element.productId ',
+      async (productId) => {
+        const productExists = await productModel.exists({ _id: productId });
+
+        return productExists;
+      }
+    ),
+
+  amount: yup.number().typeError('User.cartItems element.amount must be a number')
+    .required('User.cartItems element.amount is required')
+    .integer('User.cartItems element.amount must be integer')
+    .positive('User.cartItems element.amount must be positive'),
+});
+
 const userValidationSchema = yup.object({
   email: yup
     .string().typeError('User.email must be a string')
@@ -75,19 +100,7 @@ const userValidationSchema = yup.object({
   role: yup.string().typeError('User.role must be a string')
     .oneOf(['USER', 'ADMIN']),
 
-  cartItems: yup
-    .array(yup.object({
-      productId: yup.string().typeError('User.cartItems element.productId must be a string')
-        .required('User.cartItems element.productId is required')
-        .test(
-          'is-mongo-object-id',
-          'User.cartItems element.productId must be valid MongoDB object Id',
-          Types.ObjectId.isValid
-        ),
-      amount: yup.number().typeError('User.cartItems element.amount must be a number')
-        .required('User.cartItems element.amount is required')
-        .positive('User.cartItems element.amount must be positive'),
-    })),
+  cartItems: yup.array(cartItemValidationSchema),
 
     favoredProducts: yup
     .array(yup.string().typeError('User.favoredProducts element must be a string')
@@ -131,19 +144,7 @@ const userUpdateValidationSchema = yup.object({
   role: yup.string().typeError('User.role must be a string')
     .oneOf(['USER', 'ADMIN']),
 
-  cartItems: yup
-    .array(yup.object({
-      productId: yup.string().typeError('User.cartItems element.productId must be a string')
-        .required('User.cartItems element.productId is required')
-        .test(
-          'is-mongo-object-id',
-          'User.cartItems element.productId must be valid MongoDB object Id',
-          Types.ObjectId.isValid
-        ),
-      amount: yup.number().typeError('User.cartItems element.amount must be a number')
-        .required('User.cartItems element.amount is required')
-        .positive('User.cartItems element.amount must be positive'),
-    })),
+  cartItems: yup.array(cartItemValidationSchema),
 
     favoredProducts: yup
     .array(yup.string().typeError('User.favoredProducts element must be a string')
@@ -159,6 +160,7 @@ const userUpdateValidationSchema = yup.object({
 
 userSchema.statics.validateData = (userData) => userValidationSchema.validate(userData);
 userSchema.statics.validateUpdateData = (userData) => userUpdateValidationSchema.validate(userData);
+userSchema.statics.validateCartItem = (cartItem) => cartItemValidationSchema.validate(cartItem);
 
 const UserModel = model('User', userSchema);
 
