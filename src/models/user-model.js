@@ -94,8 +94,7 @@ const userValidationSchema = yup.object({
 
   cartItems: yup.array(cartItemValidationSchema),
 
-  img: yup
-    .string().typeError('User.img must be a string')
+  img: yup.string().typeError('User.img must be a string')
 });
 
 const userUpdateValidationSchema = yup.object({
@@ -137,7 +136,5 @@ userSchema.statics.validateUpdateData = (userData) => userUpdateValidationSchema
 userSchema.statics.validateCartItem = (cartItem) => cartItemValidationSchema.validate(cartItem);
 
 const UserModel = model('User', userSchema);
-
-UserModel.validate
 
 module.exports = UserModel;
