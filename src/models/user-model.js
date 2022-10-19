@@ -1,6 +1,6 @@
 const { Schema, Types, model } = require('mongoose');
 const yup = require('yup');
-const productModel = require('./product-model');
+const HouseModel = require('./house-model');
 
 const userSchema = Schema({
   email: {
@@ -18,9 +18,9 @@ const userSchema = Schema({
   },
   cartItems: {
     type: [{
-      productId: {
+      houseId: {
         type: Schema.Types.ObjectId,
-        ref: 'Product',
+        ref: 'house',
         required: true,
       },
       amount: {
@@ -38,20 +38,20 @@ const userSchema = Schema({
 });
 
 const cartItemValidationSchema = yup.object({
-  productId: yup.string().typeError('User.cartItems element.productId must be a string')
-    .required('User.cartItems element.productId is required')
+  houseId: yup.string().typeError('User.cartItems element.houseId must be a string')
+    .required('User.cartItems element.houseId is required')
     .test(
       'is-mongo-object-id',
-      'User.cartItems element.productId must be valid MongoDB object Id',
+      'User.cartItems element.houseId must be valid MongoDB object Id',
       Types.ObjectId.isValid
     )
     .test(
-      'product-exists',
-      'product was not found using cartItems element.productId ',
-      async (productId) => {
-        const productExists = await productModel.exists({ _id: productId });
+      'house-exists',
+      'house was not found using cartItems element.houseId ',
+      async (houseId) => {
+        const houseExists = await HouseModel.exists({ _id: houseId });
 
-        return productExists;
+        return houseExists;
       }
     ),
 
@@ -110,7 +110,8 @@ const userUpdateValidationSchema = yup.object({
         return foundUser === null;
       }
     ),
-
+    fullname: yup.string().typeError('User.fullname must be a string'),
+    
   password: yup
     .string().typeError('User.password must be a string')
     .min(8, 'User.password must have at least 8 symbols')

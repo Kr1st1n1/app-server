@@ -1,6 +1,7 @@
 const { createNotFoundError, sendErrorResponse } = require('../helpers/errors');
 const { hashPassword } = require('../helpers/password-encryption');
 const UserModel = require('../models/user-model');
+const createUserViewModel = require('../view-models/create-user-view-model');
 
 const createUserNotFoundError = (userId) => createNotFoundError(`User with id '${userId}' was not found`);
 
@@ -8,7 +9,7 @@ const fetchAll = async (req, res) => {
   try {
     const userDocs = await UserModel.find();
 
-    res.status(200).json(userDocs);
+    res.status(200).json(userDocs.map(createUserViewModel));
   } catch (err) { sendErrorResponse(err, res); }
 };
 
@@ -19,7 +20,7 @@ const fetch = async (req, res) => {
     const foundUserDoc = await UserModel.findById(userId);
     if (foundUserDoc === null) throw createUserNotFoundError(userId);
 
-    res.status(200).json(foundUserDoc);
+    res.status(200).json(createUserViewModel(foundUserDoc));
   } catch (err) { sendErrorResponse(err, res); }
 };
 
@@ -45,7 +46,7 @@ const create = async (req, res) => {
       img
     });
 
-    res.status(201).json(newUserDoc)
+    res.status(201).json(createUserViewModel(newUserDoc));
 
   } catch (err) { sendErrorResponse(err, res); }
 };
@@ -84,7 +85,7 @@ const replace = async (req, res) => {
       }
     );
 
-    res.status(200).json(replacedUserDoc)
+    res.status(200).json(createUserViewModel(replacedUserDoc))
 
   } catch (err) { sendErrorResponse(err, res); }
 };
@@ -118,8 +119,7 @@ const update = async (req, res) => {
 
     if (updatedUserDoc === null) throw createUserNotFoundError(userId);
 
-    res.status(200).json(updatedUserDoc)
-
+    res.status(200).json(createUserViewModel(updatedUserDoc));
   } catch (err) { sendErrorResponse(err, res); }
 };
 
@@ -130,7 +130,7 @@ const remove = async (req, res) => {
     const deletedUser = await UserModel.findByIdAndDelete(userId);
     if (deletedUser === null) createUserNotFoundError(userId);
 
-    res.status(200).json(deletedUser);
+    res.status(200).json(createUserViewModel(deletedUserDoc));
   } catch (err) { sendErrorResponse(err, res); }
 };
 

@@ -1,14 +1,15 @@
 const UserModel = require('../models/user-model');
+const createCartItemViewModel = require('../view-models/create-cart-item-view-model')
 const {
   createBadDataError,
   createNotFoundError,
   sendErrorResponse,
 } = require('../helpers/errors');
 
-const findProduct = (cartItems, id) => cartItems.find((item) => item.productId.toString() === id);
+const findhouse = (cartItems, id) => cartItems.find((item) => item.houseId.toString() === id);
 
 const fetchAll = (req, res) => {
-  res.status(200).json(req.authUser.cartItems)
+  res.status(200).json(req.authUser.cartItems.map(createCartItemViewModel));
 }
 
 const create = async (req, res) => {
@@ -17,19 +18,19 @@ const create = async (req, res) => {
   try {
     await UserModel.validateCartItem(data);
 
-    const foundProduct = findProduct(req.authUser.cartItems, data.productId);
-    if (foundProduct) throw createBadDataError('Product already exist in cart');
+    const foundhouse = findhouse(req.authUser.cartItems, data.houseId);
+    if (foundhouse) throw createBadDataError('house already exist in cart');
 
-    const newCartItem = {
-      productId: data.productId,
+    const newCartItemDoc = {
+      houseId: data.houseId,
       amount: data.amount,
     }
 
-    req.authUser.cartItems.push(newCartItem);
+    req.authUser.cartItems.push(newCartItemDoc);
 
     await req.authUser.save()
 
-    res.status(200).json(newCartItem)
+    res.status(200).json(createCartItemViewModel(newCartItemDoc))
   } catch (error) {
     sendErrorResponse(error, res)
   }
@@ -37,38 +38,38 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
   const data = {
-    productId: req.params.id,
+    houseId: req.params.id,
     amount: req.body.amount,
   }
 
   try {
     await UserModel.validateCartItem(data);
 
-    const foundProduct = findProduct(req.authUser.cartItems, data.productId);
-    if (!foundProduct) throw createNotFoundError('Product does not exist in cart');
+    const foundCartItemDoc = findhouse(req.authUser.cartItems, data.houseId);
+    if (!foundCartItemDoc) throw createNotFoundError('house does not exist in cart');
 
-    foundProduct.amount = data.amount;
+    foundCartItemDoc.amount = data.amount;
 
     await req.authUser.save();
 
-    res.status(200).json(foundProduct)
+    res.status(200).json(createCartItemViewModel(foundCartItemDoc));
   } catch (error) {
     sendErrorResponse(error, res)
   }
 }
 
 const remove = async (req, res) => {
-  const productId = req.params.id;
+  const houseId = req.params.id;
 
   try {
-    const foundProduct = findProduct(req.authUser.cartItems, productId);
-    if (!foundProduct) throw createNotFoundError('Product does not exist in cart');
+    const foundCartItemDoc = findhouse(req.authUser.cartItems, houseId);
+    if (!foundCartItemDoc) throw createNotFoundError('house does not exist in cart');
 
-    req.authUser.cartItems = req.authUser.cartItems.filter(x => x.productId.toString() !== productId);
+    req.authUser.cartItems = req.authUser.cartItems.filter(x => x.houseId.toString() !== houseId);
 
     await req.authUser.save();
 
-    res.status(200).json(foundProduct);
+    res.status(200).json(createCartItemViewModel(foundCartItemDoc));
   } catch (error) {
     sendErrorResponse(error, res)
   }

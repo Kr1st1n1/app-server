@@ -6,10 +6,7 @@ const categorySchema = Schema({
     type: String,
     required: true,
   },
-  image: {
-    type: String,
-    required: true,
-  },
+
 }, {
   timestamps: true
 });
@@ -18,14 +15,10 @@ const categoryValidationSchema = yup.object().shape({
   title: yup
     .string().typeError('Category.title must be a string')
     .required('Category.title is required'),
-  image: yup
-    .string().typeError('Category.image must be a string')
-    .required('Category.image is required'),
 });
 
 const categoryUpdateValidationSchema = yup.object().shape({
   title: yup.string().typeError('Category.title must be a string'),
-  image: yup.string().typeError('Category.image must be a string')
 });
 
 categorySchema.statics.validateData = (categoryData) => categoryValidationSchema.validate(categoryData)
